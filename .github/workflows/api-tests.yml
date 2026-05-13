@@ -1,0 +1,36 @@
+name: PetStore API Tests
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Repoyu Klonla
+      uses: actions/checkout@v4
+
+    - name: Node.js Kurulumu
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Newman ve Allure Kurulumu
+      run: |
+        npm install -g newman
+        npm install -g newman-reporter-allure
+
+    - name: API Testlerini Çalıştır
+      run: newman run PetStore_Collection.json -e PetStore_Environment.json -r cli,allure
+      
+    # Opsiyonel: Oluşan allure-results klasörünü GitHub'a artifact olarak yükleyebilirsiniz
+    - name: Allure Sonuçlarını Yükle
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: allure-results
+        path: allure-results

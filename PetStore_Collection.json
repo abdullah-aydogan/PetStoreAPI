@@ -1,0 +1,262 @@
+{
+  "info": {
+    "_postman_id": "ec32f4b2-202b-4951-a599-ff23a7f4ecf4",
+    "name": "PetStore API Tests",
+    "description": "## PetStore API Tests\n\nThis collection validates the core **Pet** resource lifecycle against the PetStore API. It is designed to be run as an end-to-end, ordered test suite that verifies both happy-path and negative scenarios.\n\n### What this collection covers\n\nThe requests are executed in sequence and together form a complete CRUD workflow:\n\n| # | Request | Method | Purpose |\n|---|---------|--------|---------|\n| 1 | Create Pet | `POST /pet` | Creates a new pet and captures the generated `petId` for use in subsequent requests. |\n| 2 | Get Pet | `GET /pet/{{petId}}` | Retrieves the newly created pet and asserts that the returned data matches the input. |\n| 3 | Update Pet Status | `PUT /pet` | Updates the pet's details (e.g. status) and verifies the changes are persisted. |\n| 4 | Delete Pet | `DELETE /pet/{{petId}}` | Deletes the pet and confirms a successful response. |\n| 5 | Verify Deletion (Negative Test) | `GET /pet/{{petId}}` | Attempts to fetch the deleted pet and asserts that the API returns a `404 Not Found`, confirming the deletion was permanent. |\n\n### Prerequisites\n\n- The **PetStore Env** environment must be selected before running the collection.\n- The `baseUrl` environment variable must be set to the target PetStore API base URL.\n\n### How to run\n\nUse the **Collection Runner** to execute all requests in order. The `petId` variable is set automatically during the run via test scripts, so no manual setup is required between steps.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "32563459"
+  },
+  "item": [
+    {
+      "name": "1. Create Pet",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 1. Durum kodunun 200 olduğunu doğrula",
+              "pm.test(\"Status code is 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "// 2. Dönen yanıtı JSON formatına çevir",
+              "var jsonData = pm.response.json();",
+              "",
+              "// 3. Status'un bizim gönderdiğimiz gibi 'available' olduğunu doğrula",
+              "pm.test(\"Pet status is available\", function () {",
+              "    pm.expect(jsonData.status).to.eql(\"available\");",
+              "});",
+              "",
+              "// 4. En Kritik Adım: Dönen ID'yi ortam değişkenine kaydet",
+              "pm.environment.set(\"petId\", jsonData.id);",
+              "",
+              "// Postman Console'a bilgi yazdır",
+              "console.log(\"Başarıyla oluşturulan Pet ID'si: \" + pm.environment.get(\"petId\"));"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": {{$randomInt}},\n  \"category\": {\n    \"id\": 1,\n    \"name\": \"Dogs\"\n  },\n  \"name\": \"TestPet_{{$timestamp}}\",\n  \"photoUrls\": [\n    \"string\"\n  ],\n  \"tags\": [\n    {\n      \"id\": 1,\n      \"name\": \"Otomasyon\"\n    }\n  ],\n  \"status\": \"available\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/pet",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "pet"
+          ]
+        },
+        "description": "Sends a `POST` request to `/pet` to create a new pet resource in the PetStore.\n\nThe request body includes a randomly generated `id` (via `{{$randomInt}}`), a timestamped name (`TestPet_{{$timestamp}}`), a category of \"Dogs\", a tag of \"Otomasyon\", and an initial status of `available`.\n\n**Tests performed:**\n- Verifies the response status code is `200 OK`.\n- Confirms the returned `status` field equals `\"available\"`.\n- Captures the returned `id` into the `petId` environment variable for use in subsequent requests."
+      },
+      "response": []
+    },
+    {
+      "name": "2. Get Pet",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 1. İsteğin başarılı olduğunu doğrula",
+              "pm.test(\"Status code is 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "// 2. Gelen veriyi parse et",
+              "var jsonData = pm.response.json();",
+              "",
+              "// 3. Gelen ID'nin, bizim ortam değişkenindeki ID ile aynı olduğunu doğrula",
+              "pm.test(\"Pet ID matches the created ID\", function () {",
+              "    var savedId = pm.environment.get(\"petId\");",
+              "    // API'den dönen ID integer, değişkendeki string veya integer olabilir, bu yüzden gevşek eşleşme (==) kullanıyoruz veya tipe çeviriyoruz.",
+              "    pm.expect(jsonData.id.toString()).to.eql(savedId.toString());",
+              "});",
+              "",
+              "// 4. İsim formatımızın doğru döndüğünü doğrula",
+              "pm.test(\"Pet name contains 'TestPet_'\", function () {",
+              "    pm.expect(jsonData.name).to.include(\"TestPet_\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/pet/{{petId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "pet",
+            "{{petId}}"
+          ]
+        },
+        "description": "Sends a `GET` request to `/pet/{{petId}}` to retrieve the pet that was created in the previous step.\n\nUses the `petId` environment variable (set by the Create Pet request) to target the correct resource.\n\n**Tests performed:**\n- Verifies the response status code is `200 OK`.\n- Confirms the returned `id` matches the saved `petId` environment variable.\n- Validates that the pet's `name` contains the expected prefix `\"TestPet_\"`."
+      },
+      "response": []
+    },
+    {
+      "name": "3. Update Pet Status",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "var jsonData = pm.response.json();",
+              "",
+              "// Statünün başarılı bir şekilde 'sold' olarak güncellendiğini doğrula",
+              "pm.test(\"Pet status updated to 'sold'\", function () {",
+              "    pm.expect(jsonData.status).to.eql(\"sold\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": {{petId}},\n  \"category\": {\n    \"id\": 1,\n    \"name\": \"Dogs\"\n  },\n  \"name\": \"TestPet_Updated\",\n  \"photoUrls\": [\n    \"string\"\n  ],\n  \"tags\": [\n    {\n      \"id\": 1,\n      \"name\": \"Otomasyon\"\n    }\n  ],\n  \"status\": \"sold\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/pet",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "pet"
+          ]
+        },
+        "description": "Sends a `PUT` request to `/pet` to update the previously created pet's details.\n\nThe request body uses the `{{petId}}` environment variable to target the correct pet, renames it to `\"TestPet_Updated\"`, and changes its status from `\"available\"` to `\"sold\"`.\n\n**Tests performed:**\n- Verifies the response status code is `200 OK`.\n- Confirms the returned `status` field has been successfully updated to `\"sold\"`."
+      },
+      "response": []
+    },
+    {
+      "name": "4. Delete Pet",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "// Gelen yanıttaki 'message' alanının bizim sildiğimiz ID'yi içerdiğini doğrula",
+              "var jsonData = pm.response.json();",
+              "pm.test(\"Response message contains deleted ID\", function () {",
+              "    var savedId = pm.environment.get(\"petId\");",
+              "    pm.expect(jsonData.message).to.eql(savedId.toString());",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/pet/{{petId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "pet",
+            "{{petId}}"
+          ]
+        },
+        "description": "Sends a `DELETE` request to `/pet/{{petId}}` to permanently remove the pet created during this test run.\n\nUses the `petId` environment variable to identify the target resource.\n\n**Tests performed:**\n- Verifies the response status code is `200 OK`.\n- Confirms the `message` field in the response body matches the deleted pet's ID, ensuring the correct resource was removed."
+      },
+      "response": []
+    },
+    {
+      "name": "5. Verify Deletion (Negative Test)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 404 Not Found\", function () {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "",
+              "pm.test(\"Error message is 'Pet not found'\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.message).to.eql(\"Pet not found\");",
+              "});",
+              "",
+              "// Test bitiminde ortam değişkenini temizlemek iyi bir pratiktir (Teardown)",
+              "pm.environment.unset(\"petId\");"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/pet/{{petId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "pet",
+            "{{petId}}"
+          ]
+        },
+        "description": "Sends a `GET` request to `/pet/{{petId}}` to confirm that the deleted pet no longer exists. This is a **negative test** that validates the API returns the correct error response after deletion.\n\n**Tests performed:**\n- Verifies the response status code is `404 Not Found`.\n- Confirms the response body contains the message `\"Pet not found\"`.\n- Performs teardown by unsetting the `petId` environment variable to clean up after the test suite."
+      },
+      "response": []
+    }
+  ]
+}
