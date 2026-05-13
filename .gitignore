@@ -1,0 +1,15 @@
+# Node.js Bağımlılıkları
+node_modules/
+
+# Test Raporları ve Çıktılar
+allure-results/
+allure-report/
+newman/
+
+# İşletim Sistemi Dosyaları (macOS)
+.DS_Store
+
+# IDE ve Editör Ayarları
+.vscode/
+.idea/
+*.swp
