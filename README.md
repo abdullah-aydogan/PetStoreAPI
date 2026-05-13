@@ -25,16 +25,14 @@ Projeyi yerel macOS veya benzeri terminal ortamınızda çalıştırmak için a�
 
 1. **Repoyu klonlayın:**
    ```bash
-   git clone [https://github.com/abdullah-aydogan/PetStoreAPI.git](https://github.com/abdullah-aydogan/PetStoreAPI.git)
+   git clone https://github.com/abdullah-aydogan/PetStoreAPI.git
    cd PetStoreAPI
-   
-```
+   ```
 
 2. **Bağımlılıkları yükleyin:**
    ```bash
    npm install
-   
-```
+   ```
 
 ## ⚙️ Çalıştırma ve Raporlama
 
