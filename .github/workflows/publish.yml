@@ -10,67 +10,58 @@ jobs:
     runs-on: ubuntu-latest
     
     permissions:
-      contents: write # gh-pages branch'ine yazmak için
-      pages: write      # GitHub Pages'e dağıtım yapmak için
-      id-token: write   # Dağıtım için kimlik doğrulaması
+      contents: write
+      pages: write      
+      id-token: write   
 
     steps:
       - name: 1. Checkout repository
         uses: actions/checkout@v4
 
-      - name: 2. Set up JDK
-        uses: actions/setup-java@v4
+      # API TESTLERİNİ ÇALIŞTIRMA (api-tests.yml'den alındı)
+      - name: 2. Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          java-version: '17' # Projenizin Java versiyonuna göre güncelleyin
-          distribution: 'temurin'
-          cache: 'maven'
+          node-version: '20'
+
+      - name: 3. Install Newman and Allure reporter
+        run: |
+          npm install -g newman
+          npm install -g newman-reporter-allure
+
+      - name: 4. Run API tests to generate Allure results
+        # continue-on-error: true # Testler başarısız olsa bile rapor yayınlansın istiyorsanız bu satırı açın
+        run: newman run PetStore_Collection.json -e PetStore_Environment.json -r cli,allure
 
       # DOKÜMANTASYON OLUŞTURMA
-      # Eğer dokümantasyon aracınız farklıysa (örn: MkDocs, Jekyll), ilgili adımları buraya ekleyin.
-      # Bu örnekte, Maven ile oluşturulduğu varsayılmıştır.
-      - name: 3. Build Documentation
+      - name: 5. Build Documentation (Placeholder)
         run: |
-          echo "Dokümantasyon oluşturma komutunuzu buraya ekleyin."
-          # Örnek: mvn site
-          # Oluşturulan dosyaların `target/docs` dizinine kopyalandığını varsayalım.
-          mkdir -p target/docs
-          # Bu kısma kendi dokümantasyon oluşturma adımlarınızı ekleyin.
-          # Örnek olarak basit bir index dosyası oluşturalım:
-          echo "<h1>Dokümantasyon</h1>" > target/docs/index.html
+          echo "Dokümantasyon oluşturma adımı."
+          mkdir -p artifact/docs
+          echo "<h1>Dokümantasyon</h1><p>Bu sayfa otomatik olarak oluşturulmuştur.</p>" > artifact/docs/index.html
 
       # ALLURE RAPORU OLUŞTURMA
-      - name: 4. Run tests to generate Allure results
-        run: mvn clean test # Bu komut Allure sonuçlarını (genellikle `target/allure-results`) üretir
-
-      - name: 5. Generate Allure Report
+      - name: 6. Generate Allure Report
         uses: simple-elf/allure-report-action@v1.7
         with:
-          results_path: target/allure-results
-          report_path: target/allure-report # Raporun oluşturulacağı geçici dizin
+          results_path: allure-results # Newman varsayılan olarak bu klasöre oluşturur
+          report_path: artifact/report  # Raporu doğrudan yayınlanacak klasörün içine oluştur
 
       # YAYINLAMA İÇİN DOSYALARI HAZIRLAMA
-      - name: 6. Prepare artifact for deployment
+      - name: 7. Prepare final artifact
         run: |
-          # Yayınlanacak dosyalar için bir ana dizin oluştur
-          mkdir -p artifact
-          
           # Ana sayfayı kopyala
           cp index.html artifact/
           
-          # Dokümantasyon dosyalarını `docs` klasörüne taşı
-          mkdir -p artifact/docs
-          cp -r target/docs/* artifact/docs/
-          
-          # Allure raporunu `report` klasörüne taşı
-          mkdir -p artifact/report
-          cp -r target/allure-report/* artifact/report/
+          # allure-results klasörünü temizle (artifakta eklenmesin)
+          rm -rf allure-results
 
       # GITHUB PAGES'E YAYINLAMA
-      - name: 7. Upload GitHub Pages artifact
+      - name: 8. Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./artifact # Hazırlanan dosyaların bulunduğu dizin
+          path: ./artifact
 
-      - name: 8. Deploy to GitHub Pages
+      - name: 9. Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
