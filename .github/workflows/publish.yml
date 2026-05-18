@@ -46,9 +46,9 @@ jobs:
       # DOKÜMANTASYON VE ANA SAYFAYI HAZIRLAMA
       - name: 7. Prepare documentation and index page
         run: |
-          # Dokümantasyon klasörünü oluştur ve mevcut dokümanları kopyala
+          # Dokümantasyon klasörünü oluştur ve document.html'i index.html olarak kopyala
           mkdir -p artifact/docs
-          cp -r docs/* artifact/docs/
+          cp docs/document.html artifact/docs/index.html
           
           # Ana sayfayı kopyala
           cp index.html artifact/
