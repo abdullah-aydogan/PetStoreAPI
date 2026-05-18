@@ -31,7 +31,6 @@ jobs:
       - name: 4. Run API tests to generate Allure results
         run: newman run PetStore_Collection.json -e PetStore_Environment.json -r cli,allure
 
-      # ALLURE RAPORUNU MANUEL OLUŞTURMA (DOCKER'SIZ)
       - name: 5. Set up JDK for Allure
         uses: actions/setup-java@v4
         with:
@@ -40,19 +39,16 @@ jobs:
 
       - name: 6. Generate Allure Report (Manual)
         run: |
-          # Allure komut satırı aracını indir ve kur
           wget https://github.com/allure-framework/allure2/releases/download/2.24.1/allure-2.24.1.tgz
           tar -zxvf allure-2.24.1.tgz
-          
-          # Raporu oluştur ve doğrudan yayınlanacak klasöre koy
           ./allure-2.24.1/bin/allure generate allure-results --clean -o artifact/report
 
       # DOKÜMANTASYON VE ANA SAYFAYI HAZIRLAMA
       - name: 7. Prepare documentation and index page
         run: |
-          # Dokümantasyon klasörünü oluştur
+          # Dokümantasyon klasörünü oluştur ve mevcut dokümanları kopyala
           mkdir -p artifact/docs
-          echo "<h1>Dokümantasyon</h1><p>Bu sayfa otomatik olarak oluşturulmuştur.</p>" > artifact/docs/index.html
+          cp -r docs/* artifact/docs/
           
           # Ana sayfayı kopyala
           cp index.html artifact/
