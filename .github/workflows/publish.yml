@@ -1,0 +1,76 @@
+name: Build and Deploy Docs & Allure Report
+
+on:
+  push:
+    branches:
+      - main # Veya master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write # gh-pages branch'ine yazmak için
+      pages: write      # GitHub Pages'e dağıtım yapmak için
+      id-token: write   # Dağıtım için kimlik doğrulaması
+
+    steps:
+      - name: 1. Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 2. Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17' # Projenizin Java versiyonuna göre güncelleyin
+          distribution: 'temurin'
+          cache: 'maven'
+
+      # DOKÜMANTASYON OLUŞTURMA
+      # Eğer dokümantasyon aracınız farklıysa (örn: MkDocs, Jekyll), ilgili adımları buraya ekleyin.
+      # Bu örnekte, Maven ile oluşturulduğu varsayılmıştır.
+      - name: 3. Build Documentation
+        run: |
+          echo "Dokümantasyon oluşturma komutunuzu buraya ekleyin."
+          # Örnek: mvn site
+          # Oluşturulan dosyaların `target/docs` dizinine kopyalandığını varsayalım.
+          mkdir -p target/docs
+          # Bu kısma kendi dokümantasyon oluşturma adımlarınızı ekleyin.
+          # Örnek olarak basit bir index dosyası oluşturalım:
+          echo "<h1>Dokümantasyon</h1>" > target/docs/index.html
+
+      # ALLURE RAPORU OLUŞTURMA
+      - name: 4. Run tests to generate Allure results
+        run: mvn clean test # Bu komut Allure sonuçlarını (genellikle `target/allure-results`) üretir
+
+      - name: 5. Generate Allure Report
+        uses: simple-elf/allure-report-action@v1.7
+        with:
+          results_path: target/allure-results
+          report_path: target/allure-report # Raporun oluşturulacağı geçici dizin
+
+      # YAYINLAMA İÇİN DOSYALARI HAZIRLAMA
+      - name: 6. Prepare artifact for deployment
+        run: |
+          # Yayınlanacak dosyalar için bir ana dizin oluştur
+          mkdir -p artifact
+          
+          # Ana sayfayı kopyala
+          cp index.html artifact/
+          
+          # Dokümantasyon dosyalarını `docs` klasörüne taşı
+          mkdir -p artifact/docs
+          cp -r target/docs/* artifact/docs/
+          
+          # Allure raporunu `report` klasörüne taşı
+          mkdir -p artifact/report
+          cp -r target/allure-report/* artifact/report/
+
+      # GITHUB PAGES'E YAYINLAMA
+      - name: 7. Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./artifact # Hazırlanan dosyaların bulunduğu dizin
+
+      - name: 8. Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetStore API Test Otomasyon Projesi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --text-main: #1e293b;
+            --text-muted: #475569;
+            --bg-body: #f8fafc;
+            --bg-surface: #ffffff;
+            --border-color: #e2e8f0;
+            --code-bg: #0f172a;
+            --code-text: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.7;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: var(--bg-surface);
+            padding: 50px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: var(--text-main);
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+            font-weight: 600;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 16px;
+            color: var(--text-muted);
+        }
+
+        .header-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #eff6ff;
+            border-left: 4px solid var(--primary-color);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .badge {
+            background-color: var(--bg-surface);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            border: 1px solid #dbeafe;
+        }
+
+        .project-desc {
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        ul, ol {
+            margin-bottom: 20px;
+            padding-left: 24px;
+            color: var(--text-muted);
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        li strong {
+            color: var(--text-main);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            background-color: var(--bg-surface);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        th, td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background-color: #f8fafc;
+        }
+
+        td ul {
+            margin-bottom: 0;
+            padding-left: 18px;
+        }
+
+        .code-inline {
+            background-color: #f1f5f9;
+            color: #ef4444;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9em;
+        }
+
+        .code-block {
+            background-color: var(--code-bg);
+            color: var(--code-text);
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.95rem;
+            overflow-x: auto;
+            margin: 15px 0 25px 0;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .endpoint-badge {
+            display: inline-block;
+            background-color: #f1f5f9;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            margin-top: 5px;
+        }
+
+        .method-get { color: #10b981; font-weight: bold; }
+        .method-post { color: #3b82f6; font-weight: bold; }
+        .method-put { color: #f59e0b; font-weight: bold; }
+        .method-delete { color: #ef4444; font-weight: bold; }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>PetStore API Test Otomasyon Projesi</h1>
+        
+        <div class="header-meta">
+            <span class="badge">👤 Hazırlayan: Abdullah Aydoğan</span>
+            <span class="badge">💼 Görev: Yazılım Test ve Kalite Uzmanı</span>
+            <span class="badge">📅 Tarih: 18.05.2026</span>
+            <p class="project-desc" style="width: 100%; margin-top: 10px; margin-bottom: 0;">Bu doküman, Swagger PetStore API'si için geliştirilmiş olan test otomasyon projesinin teknik detaylarını, mimarisini ve kullanımını açıklamaktadır.</p>
+        </div>
+
+        <h2>1. Projeye Genel Bakış</h2>
+        <p>Bu proje, PetStore API'sinin temel <span class="code-inline">Pet</span> kaynağı üzerindeki CRUD (Create, Read, Update, Delete) operasyonlarının tamamını uçtan uca test eden bir otomasyon paketidir. Testler, bir evcil hayvanın yaşam döngüsünü simüle edecek şekilde sıralı bir mantıkla çalışır.</p>
+
+        <h3>1.1. Test Akış Mimarisi</h3>
+        <p>Proje, "zincirleme test" (chained tests) mantığına dayanır. Her test, bir sonrakinin çalışması için gerekli olan veriyi üretir ve bu veri, Postman ortam değişkenleri (environment variables) aracılığıyla adımlar arasında taşınır.</p>
+        <ol>
+            <li><strong>Create Pet</strong> isteği gönderilir ve API'den dönen yanıtın içindeki <span class="code-inline">id</span> değeri, <span class="code-inline">petId</span> adıyla bir ortam değişkenine kaydedilir.</li>
+            <li><strong>Get Pet</strong>, <strong>Update Pet</strong> ve <strong>Delete Pet</strong> istekleri, bu <span class="code-inline">petId</span> değişkenini kullanarak doğru evcil hayvan kaynağı üzerinde işlem yapar.</li>
+            <li>Son olarak, <strong>Verify Deletion</strong> adımı ile kaynağın kalıcı olarak silindiği teyit edilir ve test döngüsü tamamlandığında ortam değişkeni temizlenir (unset).</li>
+        </ol>
+        <p>Bu mimari, testlerin hem bağımsız çalışabilmesini hem de birlikte anlamlı bir iş akışını test etmesini sağlar.</p>
+
+        <h2>2. Kullanılan Teknolojiler ve Araçlar</h2>
+        <p>Proje, modern API test otomasyonu pratiklerine uygun olarak aşağıdaki araç setini kullanır:</p>
+        <ul>
+            <li><strong>Postman:</strong> API isteklerini tasarlamak, test betiklerini (JavaScript) yazmak ve bunları bir koleksiyon altında gruplamak için kullanılan ana araçtır.</li>
+            <li><strong>Newman:</strong> Postman koleksiyonlarını CI/CD (Sürekli Entegrasyon/Sürekli Dağıtım) süreçlerine entegre etmek veya komut satırından otomatize bir şekilde çalıştırmak için kullanılan bir CLI (Command-Line Interface) aracıdır.</li>
+            <li><strong>Allure Framework:</strong> Newman tarafından üretilen test sonuçlarını, yönetici ve geliştiricilerin kolayca anlayabileceği, interaktif ve detaylı HTML raporlarına dönüştüren bir raporlama aracıdır.</li>
+            <li><strong>Node.js / npm:</strong> Projenin bağımlılıklarını yönetmek ve test/raporlama betiklerini çalıştırmak için kullanılan platform ve paket yöneticisidir.</li>
+        </ul>
+
+        <h2>3. Proje Yapısı ve Dosyalar</h2>
+        <p>Proje kök dizininde aşağıdaki önemli dosyalar ve klasörler bulunmaktadır:</p>
+        <ul>
+            <li><strong>PetStore_Collection.json:</strong> Postman'de oluşturulan ve tüm API isteklerini, test betiklerini ve dokümantasyonunu içeren ana koleksiyon dosyasıdır.</li>
+            <li><strong>PetStore_Environment.json:</strong> Testlerin çalışması için gerekli olan ortam değişkenlerini (örneğin, <span class="code-inline">baseUrl</span>) barındıran dosyadır. Bu dosya, testlerin farklı ortamlarda (geliştirme, test, üretim) kolayca çalıştırılabilmesini sağlar.</li>
+            <li><strong>package.json:</strong> Projenin meta verilerini (adı, versiyonu vb.) ve bağımlılıklarını (newman, allure-commandline) tanımlar. Ayrıca <span class="code-inline">npm test</span> ve <span class="code-inline">npm run report</span> gibi komutları içeren scripts bölümünü barındırır.</li>
+            <li><strong>allure-results/:</strong> Newman testleri çalıştırıldığında Allure raporu için gerekli olan ham XML sonuç dosyalarının üretildiği klasördür.</li>
+            <li><strong>node_modules/:</strong> <span class="code-inline">npm install</span> komutu ile yüklenen proje bağımlılıklarının bulunduğu klasördür.</li>
+        </ul>
+
+        <h2>4. Kurulum ve Ön Gereksinimler</h2>
+        <p>Projeyi çalıştırmadan önce sisteminizde aşağıdaki araçların kurulu olduğundan emin olun:</p>
+        <ul>
+            <li>Node.js (LTS versiyonu tavsiye edilir)</li>
+            <li>npm (Node.js ile birlikte otomatik olarak kurulur)</li>
+        </ul>
+        <p>Kurulum adımları:</p>
+        <ol>
+            <li><strong>Projeyi Klonlayın:</strong>
+                <div class="code-block">git clone &lt;proje-linki&gt;<br>cd PetStoreAPI</div>
+            </li>
+            <li><strong>Proje Bağımlılıklarını Yükleyin:</strong><br>
+                <span class="code-inline">package.json</span> dosyasında tanımlı olan newman ve allure-commandline gibi araçları yüklemek için aşağıdaki komutu çalıştırın:
+                <div class="code-block">npm install</div>
+            </li>
+        </ol>
+
+        <h2>5. Testlerin Çalıştırılması ve Raporlama</h2>
+        
+        <h3>5.1. Testleri Çalıştırma</h3>
+        <p>Aşağıdaki komut, <span class="code-inline">package.json</span> dosyasındaki test betiğini tetikler. Bu betik, Newman'ı kullanarak <span class="code-inline">PetStore_Collection.json</span> koleksiyonunu çalıştırır, <span class="code-inline">-e</span> parametresi ile <span class="code-inline">PetStore_Environment.json</span> dosyasını ortama dahil eder ve <span class="code-inline">-r</span> parametresi ile sonuçların hem komut satırında (cli) hem de Allure formatında (allure) üretilmesini sağlar.</p>
+        <div class="code-block">npm test</div>
+
+        <h3>5.2. Test Raporunu Görüntüleme</h3>
+        <p>Testler tamamlandıktan sonra, <span class="code-inline">allure-results</span> klasöründe üretilen sonuçları kullanarak interaktif HTML raporunu oluşturmak ve görüntülemek için aşağıdaki komutu çalıştırın:</p>
+        <div class="code-block">npm run report</div>
+        <p>Bu komut, <span class="code-inline">allure serve</span> komutunu çalıştırarak geçici bir web sunucusu başlatır ve oluşturulan raporu varsayılan tarayıcınızda açar.</p>
+
+        <h2>6. Detaylı Test Senaryoları ve Doğrulamalar</h2>
+        <p>Aşağıdaki tabloda, koleksiyondaki her bir isteğin amacı ve gerçekleştirdiği test doğrulamaları (assertion'lar) detaylandırılmıştır.</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th width="5%">#</th>
+                    <th width="20%">İstek</th>
+                    <th width="25%">Endpoint / Metod</th>
+                    <th width="50%">Test Doğrulamaları (Assertions)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td><strong>Create Pet</strong></td>
+                    <td>
+                        <span class="method-post">POST</span><br>
+                        <span class="endpoint-badge">/pet</span>
+                    </td>
+                    <td>
+                        <ul>
+                            <li>Status code is 200 OK</li>
+                            <li>Response body'deki status alanının "available" olduğunu doğrular.</li>
+                            <li>Dönen <span class="code-inline">id</span>'yi <span class="code-inline">petId</span> olarak ortam değişkenine kaydeder.</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td><strong>Get Pet</strong></td>
+                    <td>
+                        <span class="method-get">GET</span><br>
+                        <span class="endpoint-badge">/pet/{{petId}}</span>
+                    </td>
+                    <td>
+                        <ul>
+                            <li>Status code is 200 OK.</li>
+                            <li>Dönen <span class="code-inline">id</span>'nin, kaydedilen <span class="code-inline">petId</span> ile eşleştiğini doğrular.</li>
+                            <li>Dönen name alanının beklenen formatta (TestPet_) olduğunu kontrol eder.</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td><strong>Update Pet</strong></td>
+                    <td>
+                        <span class="method-put">PUT</span><br>
+                        <span class="endpoint-badge">/pet</span>
+                    </td>
+                    <td>
+                        <ul>
+                            <li>Status code is 200 OK</li>
+                            <li>Response body'deki status alanının "sold" olarak güncellendiğini doğrular.</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td><strong>Delete Pet</strong></td>
+                    <td>
+                        <span class="method-delete">DELETE</span><br>
+                        <span class="endpoint-badge">/pet/{{petId}}</span>
+                    </td>
+                    <td>
+                        <ul>
+                            <li>Status code is 200 OK.</li>
+                            <li>Dönen message alanının, silinen <span class="code-inline">petId</span>'yi içerdiğini doğrular.</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td><strong>Verify Deletion</strong></td>
+                    <td>
+                        <span class="method-get">GET</span><br>
+                        <span class="endpoint-badge">/pet/{{petId}}</span>
+                    </td>
+                    <td>
+                        <ul>
+                            <li>Status code is 404 Not Found (Negatif Test).</li>
+                            <li>Hata mesajının "Pet not found" olduğunu doğrular.</li>
+                            <li><span class="code-inline">petId</span> ortam değişkenini temizler (teardown).</li>
+                        </ul>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>7. Ortam Değişkenleri</h2>
+        <p>Testlerin farklı API ortamlarında (örneğin, yerel, geliştirme, üretim) sorunsuz çalışabilmesi için <span class="code-inline">PetStore_Environment.json</span> dosyası kullanılır.</p>
+        <p><strong>baseUrl:</strong> Test edilecek API'nin temel adresini tutar. Örnek: <span class="code-inline">https://petstore.swagger.io/v2</span></p>
+
+    </div>
+
+</body>
+</html>
